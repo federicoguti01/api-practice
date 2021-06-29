@@ -7,4 +7,3 @@ response = requests.post(url, data)
 
 print(response.status_code)
 print(response.json())
-
