@@ -13,4 +13,3 @@ rn = time['updated']
 format_rn = rn + ','
 
 print('As of', format_rn, '1 Bitcoin currently costs $', btc_cost, 'USD!')
-
