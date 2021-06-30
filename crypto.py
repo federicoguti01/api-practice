@@ -11,7 +11,7 @@ response = requests.get(rn_url)
 r = response.json()
 price = r['bpi']
 dead_prez = price['USD']
-btc_cost = round(float(dead_prez['rate'].replace(',','')))
+btc_cost = round(float(dead_prez['rate'].replace(',', '')))
 
 time = r['time']
 rn = time['updated']
