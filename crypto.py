@@ -50,11 +50,14 @@ def create_database_table(dataframe, name):
     dataframe.to_sql(name, con=engine, if_exists='replace', index=False)
     save_database()
 
+
 def load_database():
     os.system("mysql -u root -pcodio crypto < crypto.sql")
 
+
 def save_database():
     os.system("mysqldump -u root -pcodio crypto > crypto.sql")
+
 
 def main():
     query_time, btc_cost = query_current_price(rn_url)
