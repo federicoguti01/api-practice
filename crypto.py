@@ -1,3 +1,4 @@
+import os
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -35,7 +36,7 @@ def plot_historical(prices):
     print(chart_title)
     print("-" * len(chart_title))
 
-    fig, ax = plt.subplots()  # Create a figure containing a single axes.
+    fig, ax = plt.subplots()
     ax.plot(*zip(*prices))
     fig.show()
 
@@ -44,10 +45,16 @@ def build_dataframe(pricelist):
     return pd.DataFrame.from_records(pricelist, columns=['Date', 'BTC-USD'])
 
 
-def build_table(dataframe, name):
+def create_database_table(dataframe, name):
     engine = create_engine('mysql://root:codio@localhost/crypto')
     dataframe.to_sql(name, con=engine, if_exists='replace', index=False)
+    save_database()
 
+def load_database():
+    os.system("mysql -u root -pcodio crypto < crypto.sql")
+
+def save_database():
+    os.system("mysqldump -u root -pcodio crypto > crypto.sql")
 
 def main():
     query_time, btc_cost = query_current_price(rn_url)
@@ -59,7 +66,10 @@ def main():
     plot_historical(cleanest_prices)
 
     df = build_dataframe(cleanest_prices)
-    build_table(df, 'historical')
+    create_database_table(df, 'historical')
+
+    # load_database()
+    # save_database()
 
     print("Look at that price fluctuation!")
     print("Crypto is the future, but it's still in early stages.")
