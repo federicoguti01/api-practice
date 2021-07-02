@@ -55,18 +55,18 @@ def build_dataframe(pricelist):
 
 
 def create_dataset(dataframe, name, filename, database):
-    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE ' +
+    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE '
                    + 'IF NOT EXISTS ' + database + ';"')
-    
+
     os.system(sql_command)
-    dataframe.to_sql(name, con=createEngine(database), if_exists='replace', 
+    dataframe.to_sql(name, con=createEngine(database), if_exists='replace',
                      index=False)
     save_database(filename, database)
 
 
 def load_dataset(filename, database, table_name):
-    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE ' +
-                  + 'IF NOT EXISTS ' + database + ';"')
+    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE '
+                   + 'IF NOT EXISTS ' + database + ';"')
                     
     os.system(sql_command)
     os.system("sudo mysql -u root -pcodio" + database + " < " + filename)
@@ -75,7 +75,8 @@ def load_dataset(filename, database, table_name):
 
     
 def createEngine(database):
-    return create_engine('mysql://root:codio@localhost/' + database + '?charset=utf8', encoding='utf8')
+    return create_engine('mysql://root:codio@localhost/' + 
+                         database + '?charset=utf8', encoding='utf8')
   
     
 def save_database(filename, database):
