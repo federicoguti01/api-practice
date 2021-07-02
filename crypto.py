@@ -43,7 +43,7 @@ def plot_historical(prices):
     ax.set_title(chart_title)
     plt.show()
 
-    
+
 def data_analysis(df):
     print('Average price (Last 31 days): $', round(df['BTC-USD'].mean()))
     print('High (Last 31 days): $', df['BTC-USD'].max())
@@ -55,7 +55,11 @@ def build_dataframe(pricelist):
 
 
 def create_dataset(dataframe, name, filename, database):
-    os.system('mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
+    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' +
+                  database +
+                  ';"')
+    
+    os.system(sql_command)
     dataframe.to_sql(name, con=createEngine(database), if_exists='replace', index=False)
     save_database(filename, database)
 
@@ -98,7 +102,6 @@ def main():
     
     # df = load_dataset(filename, database, 'historical')
     create_dataset(full_df, 'historical', filename, database)
-
 
     # save_dataset()
 
