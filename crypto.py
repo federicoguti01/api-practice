@@ -41,9 +41,9 @@ def plot_historical(prices):
     ax.set_xlabel('Date')
     ax.set_ylabel('Price (USD)')
     ax.set_title(chart_title)
-    
     plt.show()
 
+    
 def data_analysis(df):
     print('Average price (Last 31 days): $', round(df['BTC-USD'].mean()))
     print('High (Last 31 days): $', df['BTC-USD'].max())
@@ -55,13 +55,17 @@ def build_dataframe(pricelist):
 
 
 def create_dataset(dataframe, name, filename, database):
-    os.system('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
+    os.system('mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
     dataframe.to_sql(name, con=createEngine(database), if_exists='replace', index=False)
     save_database(filename, database)
 
 
 def load_dataset(filename, database, table_name):
-    os.system('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
+    sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' +
+                  database +
+                  ';"')
+                    
+    os.system(sql_command)
     os.system("sudo mysql -u root -pcodio" + database + " < " + filename)
     df = pd.read_sql_table(table_name, con=createEngine(database))
     return df
@@ -86,8 +90,6 @@ def main():
     # create dataset from scratch
     cleaner_prices = query_historical_price(hist_url)
     cleanest_prices = cleaner_prices[21:]
-    
-    
     
     full_df = build_dataframe(cleaner_prices)
     data_analysis(full_df)
