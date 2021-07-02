@@ -26,7 +26,7 @@ def query_historical_price(url):
 
     clean_prices = tuple(prices.items())
     cleaner_prices = [(date[5:], round(price)) for date, price in clean_prices]
-    return cleaner_prices[21:]
+    return cleaner_prices
 
 
 def plot_historical(prices):
@@ -38,41 +38,67 @@ def plot_historical(prices):
 
     fig, ax = plt.subplots()
     ax.plot(*zip(*prices))
-    fig.show()
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Price (USD)')
+    ax.set_title(chart_title)
+    
+    plt.show()
 
-
+def data_analysis(df):
+    print('Average price (Last 31 days): $', round(df['BTC-USD'].mean()))
+    print('High (Last 31 days): $', df['BTC-USD'].max())
+    print('Low (Last 31 days): $', df['BTC-USD'].min())
+    
+    
 def build_dataframe(pricelist):
     return pd.DataFrame.from_records(pricelist, columns=['Date', 'BTC-USD'])
 
 
-def create_database_table(dataframe, name):
-    engine = create_engine('mysql://root:codio@localhost/crypto')
-    dataframe.to_sql(name, con=engine, if_exists='replace', index=False)
-    save_database()
+def create_dataset(dataframe, name, filename, database):
+    os.system('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
+    dataframe.to_sql(name, con=createEngine(database), if_exists='replace', index=False)
+    save_database(filename, database)
 
 
-def load_database():
-    os.system("mysql -u root -pcodio crypto < crypto.sql")
+def load_dataset(filename, database, table_name):
+    os.system('sudo mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS ' + database + ';"')
+    os.system("sudo mysql -u root -pcodio" + database + " < " + filename)
+    df = pd.read_sql_table(table_name, con=createEngine(database))
+    return df
 
-
-def save_database():
-    os.system("mysqldump -u root -pcodio crypto > crypto.sql")
+    
+def createEngine(database):
+    return create_engine('mysql://root:codio@localhost/' + database + '?charset=utf8', encoding='utf8')
+  
+    
+def save_database(filename, database):
+    os.system("mysqldump -u root -pcodio " + database + " > " + filename)
 
 
 def main():
+    filename = 'crypto.sql'
+    database = 'crypto'
+    
     query_time, btc_cost = query_current_price(rn_url)
-    cleanest_prices = query_historical_price(hist_url)
     format_time = query_time + ','
-
     print('As of', format_time, '1 BTC currently costs $', btc_cost, 'USD!')
-
+    
+    # create dataset from scratch
+    cleaner_prices = query_historical_price(hist_url)
+    cleanest_prices = cleaner_prices[21:]
+    
+    
+    
+    full_df = build_dataframe(cleaner_prices)
+    data_analysis(full_df)
+    
     plot_historical(cleanest_prices)
+    
+    # df = load_dataset(filename, database, 'historical')
+    create_dataset(full_df, 'historical', filename, database)
 
-    df = build_dataframe(cleanest_prices)
-    create_database_table(df, 'historical')
 
-    # load_database()
-    # save_database()
+    # save_dataset()
 
     print("Look at that price fluctuation!")
     print("Crypto is the future, but it's still in early stages.")
