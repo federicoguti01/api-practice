@@ -67,7 +67,7 @@ def create_dataset(dataframe, name, filename, database):
 def load_dataset(filename, database, table_name):
     sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE '
                    + 'IF NOT EXISTS ' + database + ';"')
-               
+
     os.system(sql_command)
     os.system("sudo mysql -u root -pcodio" + database + " < " + filename)
     df = pd.read_sql_table(table_name, con=createEngine(database))
