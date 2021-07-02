@@ -73,12 +73,12 @@ def load_dataset(filename, database, table_name):
     df = pd.read_sql_table(table_name, con=createEngine(database))
     return df
 
-    
+
 def createEngine(database):
     return create_engine('mysql://root:codio@localhost/' +
                          database + '?charset=utf8', encoding='utf8')
-  
-    
+
+
 def save_database(filename, database):
     os.system("mysqldump -u root -pcodio " + database + " > " + filename)
 
@@ -86,20 +86,20 @@ def save_database(filename, database):
 def main():
     filename = 'crypto.sql'
     database = 'crypto'
-    
+
     query_time, btc_cost = query_current_price(rn_url)
     format_time = query_time + ','
     print('As of', format_time, '1 BTC currently costs $', btc_cost, 'USD!')
-    
+
     # create dataset from scratch
     cleaner_prices = query_historical_price(hist_url)
     cleanest_prices = cleaner_prices[21:]
-    
+
     full_df = build_dataframe(cleaner_prices)
     data_analysis(full_df)
-    
+
     plot_historical(cleanest_prices)
-    
+
     # df = load_dataset(filename, database, 'historical')
     create_dataset(full_df, 'historical', filename, database)
 
