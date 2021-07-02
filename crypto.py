@@ -48,18 +48,19 @@ def data_analysis(df):
     print('Average price (Last 31 days): $', round(df['BTC-USD'].mean()))
     print('High (Last 31 days): $', df['BTC-USD'].max())
     print('Low (Last 31 days): $', df['BTC-USD'].min())
-  
-    
+
+
 def build_dataframe(pricelist):
     return pd.DataFrame.from_records(pricelist, columns=['Date', 'BTC-USD'])
 
 
 def create_dataset(dataframe, name, filename, database):
     sql_command = ('sudo mysql -u root -pcodio -e "CREATE DATABASE ' +
-                  + 'IF NOT EXISTS ' + database + ';"')
+                   + 'IF NOT EXISTS ' + database + ';"')
     
     os.system(sql_command)
-    dataframe.to_sql(name, con=createEngine(database), if_exists='replace', index=False)
+    dataframe.to_sql(name, con=createEngine(database), if_exists='replace', 
+                     index=False)
     save_database(filename, database)
 
 
